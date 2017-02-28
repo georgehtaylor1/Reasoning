@@ -21,4 +21,6 @@ public abstract class Tree {
 
 	public abstract boolean isCNF();
 
+	public abstract void prettyPrint(String string);
+
 }

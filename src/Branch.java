@@ -57,12 +57,20 @@ public class Branch extends Tree {
 
 	@Override
 	public boolean isDisjunctTree() {
-		return isEnd() || (getSymbol().equals("|") && getLeft().isDisjunctTree() && getRight().isDisjunctTree());
+		return isEnd() || (getSymbol().equals("+") && getLeft().isDisjunctTree() && getRight().isDisjunctTree());
 	}
 
 	@Override
 	public boolean isCNF() {
 		return isDisjunctTree() || (getSymbol().equals("&") && getLeft().isCNF() && getRight().isCNF());
+	}
+
+	public void prettyPrint(String prefix) {
+		System.out.println(prefix + getSymbol());
+		if (getLeft() != null)
+			getLeft().prettyPrint(prefix + "| ");
+		if (getRight() != null)
+			getRight().prettyPrint(prefix + "| ");
 	}
 
 }

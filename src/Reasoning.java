@@ -13,7 +13,7 @@ public class Reasoning {
 
 	public static void main(String[] args) {
 
-		terminals = new HashSet<String>(Arrays.asList("&", "|", ">", "~", "-"));
+		terminals = new HashSet<String>(Arrays.asList("&", "+", ">", "~", "-"));
 
 		String input = "((A & (A -> B)) <-> (A & ((-A) | B)))";
 
@@ -40,10 +40,12 @@ public class Reasoning {
 		tree = pushNegations(tree);
 		System.out.print("negation free tree: ");
 		System.out.println(tree.toString());
-
+		tree.prettyPrint("");
+		
 		tree = cnf(tree);
 		System.out.print("CNF tree: ");
 		System.out.println(tree.toString());
+		//tree.prettyPrint("");
 
 		HashSet<HashSet<Atom>> set = setify(tree);
 		System.out.print("Set: ");
@@ -52,7 +54,7 @@ public class Reasoning {
 	}
 
 	private static String clean(String input) {
-		return input.replace(" ", "").replace("<->", "~").replace("->", ">");
+		return input.replace(" ", "").replace("<->", "~").replace("->", ">").replace("|", "+");
 	}
 
 	private static String[] tokenize(String input) {
@@ -119,9 +121,9 @@ public class Reasoning {
 
 	/**
 	 * <ul>
-	 * <li>(A & B) | (C & D) => p((A & B) | C) & p((A | B) & D)</li>
-	 * <li>L | (A & B) => (A | L) & (B | L)</li>
-	 * <li>(A & B) | L => (A | L) & (B | L)</li>
+	 * <li>(A & B) | (C & D) => p((A & B) + C) & p((A + B) & D)</li>
+	 * <li>L + (A & B) => (A + L) & (B + L)</li>
+	 * <li>(A & B) + L => (A + L) & (B + L)</li>
 	 * </ul>
 	 * 
 	 * @param tree
@@ -136,17 +138,20 @@ public class Reasoning {
 		Tree left = cnf(tree.getLeft());
 		Tree right = cnf(tree.getRight());
 
+		if(tree.getSymbol().equals("&"))
+			return new Branch("&", left, right);
+		
 		if (left.getSymbol().equals("&") && right.getSymbol().equals("&"))
-			return new Branch("&", cnf(new Branch("|", left, right.getLeft())),
-					cnf(new Branch("|", left, right.getRight())));
+			return new Branch("&", cnf(new Branch("+", left, right.getLeft())),
+					cnf(new Branch("+", left, right.getRight())));
 
-		if (left.getSymbol().equals("&") && (right.getSymbol().equals("|") || right.isEnd()))
-			return new Branch("&", cnf(new Branch("|", left.getLeft(), right)),
-					cnf(new Branch("|", left.getRight(), right)));
+		if (left.getSymbol().equals("&") && (right.getSymbol().equals("+") || right.isEnd()))
+			return new Branch("&", cnf(new Branch("+", left.getLeft(), right)),
+					cnf(new Branch("+", left.getRight(), right)));
 
-		if ((left.getSymbol().equals("|") || left.isEnd()) && right.getSymbol().equals("&"))
-			return new Branch("&", cnf(new Branch("|", right.getLeft(), left)),
-					cnf(new Branch("|", right.getRight(), left)));
+		if ((left.getSymbol().equals("+") || left.isEnd()) && right.getSymbol().equals("&"))
+			return new Branch("&", cnf(new Branch("+", right.getLeft(), left)),
+					cnf(new Branch("+", right.getRight(), left)));
 
 		//System.out.println("ERR");
 		return tree;
@@ -159,10 +164,10 @@ public class Reasoning {
 	 * <li>~L => ~L</li>
 	 * 
 	 * <li>~T => ~p(T)
-	 * <li>T > T => p(T) | ~p(T)</li>
-	 * <li>T | T => p(T) | p(T)</li>
+	 * <li>T > T => p(T) + ~p(T)</li>
+	 * <li>T + T => p(T) + p(T)</li>
 	 * <li>T & T => p(T) & p(T)</li>
-	 * <li>A <> B => p(~A | B) & p(A | ~B)</li>
+	 * <li>A <> B => p(~A + B) & p(A + ~B)</li>
 	 * </ul>
 	 * 
 	 * @param tree
@@ -185,11 +190,11 @@ public class Reasoning {
 			return new Branch("-", removeImplications(tree.getLeft()), null);
 
 		if (tree.getSymbol().equals(">"))
-			return new Branch("|", new Branch("-", removeImplications(tree.getLeft()), null),
+			return new Branch("+", new Branch("-", removeImplications(tree.getLeft()), null),
 					removeImplications(tree.getRight()));
 
-		if (tree.getSymbol().equals("|"))
-			return new Branch("|", removeImplications(tree.getLeft()), removeImplications(tree.getRight()));
+		if (tree.getSymbol().equals("+"))
+			return new Branch("+", removeImplications(tree.getLeft()), removeImplications(tree.getRight()));
 
 		if (tree.getSymbol().equals("&"))
 			return new Branch("&", removeImplications(tree.getLeft()), removeImplications(tree.getRight()));
@@ -204,9 +209,9 @@ public class Reasoning {
 	 * <li>-L => -L</li>
 	 * 
 	 * <li>T&T => p(T) & p(T)</li>
-	 * <li>T|T => p(T) | p(T)</li>
-	 * <li>~(T&T) => p(~T) | p(~T)</li>
-	 * <li>~(T|T) => p(~T) & p(~T)</li>
+	 * <li>T+T => p(T) + p(T)</li>
+	 * <li>~(T&T) => p(~T) + p(~T)</li>
+	 * <li>~(T+T) => p(~T) & p(~T)</li>
 	 * <li>~(~T) => p(T)</li>
 	 * </ul>
 	 * 
@@ -225,16 +230,16 @@ public class Reasoning {
 		if (tree.getSymbol().equals("&"))
 			return new Branch("&", pushNegations(tree.getLeft()), pushNegations(tree.getRight()));
 
-		if (tree.getSymbol().equals("|"))
-			return new Branch("|", pushNegations(tree.getLeft()), pushNegations(tree.getRight()));
+		if (tree.getSymbol().equals("+"))
+			return new Branch("+", pushNegations(tree.getLeft()), pushNegations(tree.getRight()));
 
 		if (tree.getSymbol().equals("-")) {
 
 			if (tree.getLeft().getSymbol().equals("&"))
-				return new Branch("|", pushNegations(new Branch("-", tree.getLeft().getLeft(), null)),
+				return new Branch("+", pushNegations(new Branch("-", tree.getLeft().getLeft(), null)),
 						pushNegations(new Branch("-", tree.getLeft().getRight(), null)));
 
-			if (tree.getLeft().getSymbol().equals("|"))
+			if (tree.getLeft().getSymbol().equals("+"))
 				return new Branch("&", pushNegations(new Branch("-", tree.getLeft().getLeft(), null)),
 						pushNegations(new Branch("-", tree.getLeft().getRight(), null)));
 
@@ -298,5 +303,5 @@ public class Reasoning {
 		return set;
 
 	}
-
+	
 }
