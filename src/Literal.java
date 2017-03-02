@@ -1,10 +1,10 @@
 
-public class Atom {
+public class Literal {
 
 	private boolean negation = false;
 	private String symbol;
 
-	public Atom(String symbol, boolean negation) {
+	public Literal(String symbol, boolean negation) {
 		setSymbol(symbol);
 		setNegation(negation);
 	}
@@ -43,7 +43,17 @@ public class Atom {
 
 	@Override
 	public boolean equals(Object obj) {
-		return ((Atom) obj).getSymbol().equals(this.getSymbol()) && (((Atom) obj).isNegation() == this.isNegation());
+		return ((Literal) obj).getSymbol().equals(this.getSymbol())
+				&& (((Literal) obj).isNegation() == this.isNegation());
+	}
+
+	/**
+	 * Return the compliment of this literal
+	 * 
+	 * @return The compliment of the literal
+	 */
+	public Literal compliment() {
+		return new Literal(this.getSymbol(), !this.isNegation());
 	}
 
 }

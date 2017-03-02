@@ -66,9 +66,9 @@ public class Branch extends Tree {
 	}
 
 	public void prettyPrint(String prefix) {
-		System.out.println(prefix + getSymbol());
 		if (getLeft() != null)
 			getLeft().prettyPrint(prefix + "| ");
+		System.out.println(prefix + getSymbol());
 		if (getRight() != null)
 			getRight().prettyPrint(prefix + "| ");
 	}

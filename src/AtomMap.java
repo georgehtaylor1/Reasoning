@@ -9,11 +9,11 @@ public class AtomMap {
 		atomMap = new HashMap<String, Integer>();
 	}
 
-	public void add(Atom atom) {
+	public void add(Literal atom) {
 		atomMap.put(atom.toString(), current++);
 	}
 	
-	public int get(Atom atom){
+	public int get(Literal atom){
 		return atomMap.get(atom.toString()); 
 	}
 

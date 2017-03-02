@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +18,13 @@ public class Reasoning {
 		terminals = new HashSet<String>(Arrays.asList("&", "+", ">", "~", "-"));
 
 		String input = "((A & (A -> B)) <-> (A & ((-A) | B)))";
+		//String input = "(((P -> Q) & P) -> Q)";
+
+		resolve(input);
+
+	}
+	
+	public static void resolve(String input){
 
 		String clean = clean(input);
 		String[] tokenized = tokenize(clean);
@@ -40,17 +49,16 @@ public class Reasoning {
 		tree = pushNegations(tree);
 		System.out.print("negation free tree: ");
 		System.out.println(tree.toString());
-		tree.prettyPrint("");
-		
+		//tree.prettyPrint("");
+
 		tree = cnf(tree);
 		System.out.print("CNF tree: ");
 		System.out.println(tree.toString());
 		//tree.prettyPrint("");
 
-		HashSet<HashSet<Atom>> set = setify(tree);
+		Formula set = setify(tree);
 		System.out.print("Set: ");
 		System.out.println(set.toString());
-
 	}
 
 	private static String clean(String input) {
@@ -138,9 +146,9 @@ public class Reasoning {
 		Tree left = cnf(tree.getLeft());
 		Tree right = cnf(tree.getRight());
 
-		if(tree.getSymbol().equals("&"))
+		if (tree.getSymbol().equals("&"))
 			return new Branch("&", left, right);
-		
+
 		if (left.getSymbol().equals("&") && right.getSymbol().equals("&"))
 			return new Branch("&", cnf(new Branch("+", left, right.getLeft())),
 					cnf(new Branch("+", left, right.getRight())));
@@ -258,12 +266,12 @@ public class Reasoning {
 	 *            The tree to be converted
 	 * @return The set of sets representing the CNF form of the tree
 	 */
-	private static HashSet<HashSet<Atom>> setify(Tree tree) {
-		HashSet<HashSet<Atom>> tempSet = new HashSet<HashSet<Atom>>();
+	private static Formula setify(Tree tree) {
+		Formula tempSet = new Formula();
 
 		if (tree.isDisjunctTree()) {
-			HashSet<Atom> clauseSet = collectDisjunctTerms(tree);
-			tempSet.add(clauseSet);
+			Clause clause = collectDisjunctTerms(tree);
+			tempSet.add(clause);
 		} else {
 
 			tempSet.addAll(setify(tree.getLeft()));
@@ -281,27 +289,65 @@ public class Reasoning {
 	 *            The disjunct tree to be converted into a clause set
 	 * @return The clause set generated from the tree
 	 */
-	private static HashSet<Atom> collectDisjunctTerms(Tree tree) {
+	private static Clause collectDisjunctTerms(Tree tree) {
 
 		if (tree.isEnd()) {
 
 			if (tree.getSymbol() == "-") {
-				HashSet<Atom> set = new HashSet<Atom>();
-				set.add(new Atom(tree.getLeft().getSymbol(), true));
-				return set;
+				Clause clause = new Clause();
+				clause.add(new Literal(tree.getLeft().getSymbol(), true));
+				return clause;
 			} else {
-				HashSet<Atom> set = new HashSet<Atom>();
-				set.add(new Atom(tree.getSymbol(), false));
-				return set;
+				Clause clause = new Clause();
+				clause.add(new Literal(tree.getSymbol(), false));
+				return clause;
 			}
 
 		}
 
-		HashSet<Atom> set = new HashSet<Atom>();
-		set.addAll(collectDisjunctTerms(tree.getLeft()));
-		set.addAll(collectDisjunctTerms(tree.getRight()));
-		return set;
+		Clause clause = new Clause();
+		clause.addAll(collectDisjunctTerms(tree.getLeft()));
+		clause.addAll(collectDisjunctTerms(tree.getRight()));
+		return clause;
 
 	}
-	
+
+	/**
+	 * Resolve two clauses. Precondition: The two clauses contain at least one complimentary literal
+	 * 
+	 * @param c1
+	 *            The first clause
+	 * @param c2
+	 *            The second clause
+	 * @param a
+	 *            The complimentary atom
+	 * @return The clause created by the resolution
+	 */
+	private static Clause resolveClauses(Clause c1, Clause c2, Literal a) {
+		Clause result = new Clause();
+		result.addAll(c1);
+		result.addAll(c2);
+		result.remove(a);
+		result.remove(a.compliment());
+		return result;
+	}
+
+	/**
+	 * Do two sets contain a complimentary literal
+	 * 
+	 * @param s1
+	 *            The first set
+	 * @param s2
+	 *            The second set
+	 * @return Whether or not the sets contain complimentary literals
+	 */
+	private static Literal getComplementaryLiteral(Clause s1, Clause s2) {
+		for (Literal l : s1) {
+			Literal testLiteral = new Literal(l.getSymbol(), !l.isNegation());
+			if (s2.contains(testLiteral))
+				return l;
+		}
+		return null;
+	}
+
 }
