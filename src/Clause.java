@@ -14,7 +14,10 @@ public class Clause extends HashSet<Literal> implements Comparable<Clause> {
 	}
 
 	public int hashCode() {
-		return 0;
+		int sum = 0;
+		for(Literal l:this)
+			sum += l.hashCode();
+		return sum;
 	}
 
 }

@@ -17,7 +17,9 @@ public class Reasoning {
 
 		terminals = new HashSet<String>(Arrays.asList("&", "+", ">", "~", "-"));
 
-		String input = "((A & (A -> B)) <-> (A & ((-A) | B)))";
+		String input = "(X & (-X))";
+		//String input = "(((A->B)&(B->C))->(-(A->C)))";
+		//String input = "(((A->B)&(B->C))->(A->C))";
 		//String input = "(((P -> Q) & P) -> Q)";
 
 		resolve(input);
@@ -56,9 +58,12 @@ public class Reasoning {
 		System.out.println(tree.toString());
 		//tree.prettyPrint("");
 
-		Formula set = setify(tree);
-		System.out.print("Set: ");
-		System.out.println(set.toString());
+		Formula formula = setify(tree);
+		System.out.print("formula: ");
+		System.out.println(formula.toString());
+		
+		ResolutionProver resProver = new ResolutionProver(formula);
+		System.out.println(resProver.toString());
 	}
 
 	private static String clean(String input) {
@@ -310,44 +315,6 @@ public class Reasoning {
 		clause.addAll(collectDisjunctTerms(tree.getRight()));
 		return clause;
 
-	}
-
-	/**
-	 * Resolve two clauses. Precondition: The two clauses contain at least one complimentary literal
-	 * 
-	 * @param c1
-	 *            The first clause
-	 * @param c2
-	 *            The second clause
-	 * @param a
-	 *            The complimentary atom
-	 * @return The clause created by the resolution
-	 */
-	private static Clause resolveClauses(Clause c1, Clause c2, Literal a) {
-		Clause result = new Clause();
-		result.addAll(c1);
-		result.addAll(c2);
-		result.remove(a);
-		result.remove(a.compliment());
-		return result;
-	}
-
-	/**
-	 * Do two sets contain a complimentary literal
-	 * 
-	 * @param s1
-	 *            The first set
-	 * @param s2
-	 *            The second set
-	 * @return Whether or not the sets contain complimentary literals
-	 */
-	private static Literal getComplementaryLiteral(Clause s1, Clause s2) {
-		for (Literal l : s1) {
-			Literal testLiteral = new Literal(l.getSymbol(), !l.isNegation());
-			if (s2.contains(testLiteral))
-				return l;
-		}
-		return null;
 	}
 
 }

@@ -52,7 +52,7 @@ public class Literal {
 	 * 
 	 * @return The compliment of the literal
 	 */
-	public Literal compliment() {
+	public Literal getCompliment() {
 		return new Literal(this.getSymbol(), !this.isNegation());
 	}
 
