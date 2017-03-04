@@ -8,6 +8,7 @@ public class Formula extends HashSet<Clause> {
 	private Tree parseTree;
 	private Tree cnfTree;
 	private Proof proof;
+	private boolean satisfiable;
 
 	public boolean equals(Formula f) {
 		return this.size() == f.size() && f.containsAll(this);
@@ -27,7 +28,7 @@ public class Formula extends HashSet<Clause> {
 		setOriginalFormula(formula);
 		setParseTree(Parser.parse(getOriginalFormula(), verbose, output));
 		normaliseTree();
-		proof = new Proof(this);
+		proof = new ResolutionProof(this);
 		if (prove)
 			prove(verbose, output);
 	}
@@ -265,7 +266,7 @@ public class Formula extends HashSet<Clause> {
 	 * @return
 	 */
 	public Proof prove(boolean verbose, PrintStream output) {
-		proof.resolve(verbose, output);
+		proof.prove(verbose, output);
 		return getProof();
 	}
 
@@ -284,7 +285,7 @@ public class Formula extends HashSet<Clause> {
 	 * @param proof
 	 *            The new proof
 	 */
-	public void setProof(Proof proof) {
+	public void setProof(ResolutionProof proof) {
 		this.proof = proof;
 	}
 
@@ -358,6 +359,25 @@ public class Formula extends HashSet<Clause> {
 	 */
 	public void setCnfTree(Tree cnfTree) {
 		this.cnfTree = cnfTree;
+	}
+
+	/**
+	 * Return whether the formula is satisfiable or not
+	 * 
+	 * @return A boolean indicating whether or not the formula is satisfiable
+	 */
+	public boolean isSatisfiable() {
+		return satisfiable;
+	}
+
+	/**
+	 * Set whether or not the formula is satisfiable
+	 * 
+	 * @param satisfiable
+	 *            The new value for the satisfiability of the formula
+	 */
+	public void setSatisfiable(boolean satisfiable) {
+		this.satisfiable = satisfiable;
 	}
 
 }

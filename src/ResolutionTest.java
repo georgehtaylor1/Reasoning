@@ -23,7 +23,7 @@ public class ResolutionTest {
 
 		for (int i = 0; i < inputs.length; i++) {
 			Formula f = new Formula(inputs[i], true, verbose, System.out);
-			assertEquals(f.getProof().isSatisfiable(), results[i]);
+			assertEquals(f.isSatisfiable(), results[i]);
 			if (verbose)
 				System.out.println("\n------------------------------------------------------------\n");
 		}
