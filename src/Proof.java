@@ -155,12 +155,16 @@ public class Proof extends ArrayList<ProofLine> {
 		return null;
 	}
 
+	/**
+	 * Produce a pretty string for the proof
+	 */
 	@Override
 	public String toString() {
 		String r = "#===============================================#\n";
 		r = r + "#                                               #\n";
 		r = r + String.format("# Proof for: %-34s #\n", getFormula().getOriginalFormula());
 		r = r + "#                                               #\n";
+		if (isProven()){
 		r = r + "# Line no. | Clauses    | Resolvant             #\n";
 		r = r + "# ---------+------------+---------------------- #\n";
 
@@ -171,37 +175,80 @@ public class Proof extends ArrayList<ProofLine> {
 		}
 		r = r + "#                                               #\n";
 		r = r + "# This formula is " + (isSatisfiable() ? "satisfiable  " : "unsatisfiable") + "                 #\n";
+		}else{
+			r = r+"# This formula is not yet proven                #\n";
+		}
 		r = r + "#                                               #\n";
 		r = r + "#===============================================#\n";
 		return r;
 	}
 
+	/**
+	 * Return a string for the line number where any -1's are replaced by '-'
+	 * 
+	 * @param lineNumber
+	 *            The line number to be displayed
+	 * @return The new line number
+	 */
 	private String lineNumber(int lineNumber) {
 		if (lineNumber == -1)
 			return "-";
 		return Integer.toString(lineNumber);
 	}
 
+	/**
+	 * Return whether the formula is satisfiable or not
+	 * 
+	 * @return A boolean indicating whether or not the formula is satisfiable
+	 */
 	public boolean isSatisfiable() {
 		return satisfiable;
 	}
 
+	/**
+	 * Set whether or not the formula is satisfiable
+	 * 
+	 * @param satisfiable
+	 *            The new value for the satisfiability of the formula
+	 */
 	public void setSatisfiable(boolean satisfiable) {
 		this.satisfiable = satisfiable;
 	}
 
+	/**
+	 * Get the formula for this proof
+	 * 
+	 * @return The formula used for this proof
+	 */
 	public Formula getFormula() {
 		return formula;
 	}
 
+	/**
+	 * Set the formula for this proof
+	 * 
+	 * @param formula
+	 *            The formula to be proven
+	 */
 	public void setFormula(Formula formula) {
 		this.formula = formula;
 	}
 
+	/**
+	 * Has this formula been proven
+	 * 
+	 * @return A boolean representing whether or not this formula has been proven
+	 */
 	public boolean isProven() {
 		return proven;
 	}
 
+	/**
+	 * Set whether or not the formula has been proven
+	 * 
+	 * @param proven
+	 *            The new value for whether or not the formula has been proven
+	 */
 	public void setProven(boolean proven) {
 		this.proven = proven;
 	}

@@ -288,22 +288,48 @@ public class Formula extends HashSet<Clause> {
 		this.proof = proof;
 	}
 
+	/**
+	 * Get the original formula that the object represents
+	 * 
+	 * @return The original object that the object represents
+	 */
 	public String getOriginalFormula() {
 		return originalFormula;
 	}
 
+	/**
+	 * Set the formula that the object represents
+	 * 
+	 * @param originalFormula
+	 *            The formula that the object represents
+	 */
 	public void setOriginalFormula(String originalFormula) {
 		this.originalFormula = originalFormula;
 	}
 
+	/**
+	 * Get the parse tree for the formula
+	 * 
+	 * @return The parse tree generated for this formula
+	 */
 	public Tree getParseTree() {
 		return parseTree;
 	}
 
+	/**
+	 * Set the parse tree for this formula
+	 * 
+	 * @param parseTree
+	 *            The new parse tree for the formula
+	 */
 	public void setParseTree(Tree parseTree) {
 		this.parseTree = parseTree;
 	}
 
+	/**
+	 * Return the original formula or a message indicating that no formula has been specified
+	 */
+	@Override
 	public String toString() {
 		String r = "";
 
@@ -315,10 +341,21 @@ public class Formula extends HashSet<Clause> {
 		return r;
 	}
 
+	/**
+	 * Get the tree in clause normal form
+	 * 
+	 * @return The tree in clause normal form
+	 */
 	public Tree getCnfTree() {
 		return cnfTree;
 	}
 
+	/**
+	 * set the tree in clause normal form
+	 * 
+	 * @param cnfTree
+	 *            The new clause normal form tree
+	 */
 	public void setCnfTree(Tree cnfTree) {
 		this.cnfTree = cnfTree;
 	}

@@ -5,8 +5,13 @@ import org.junit.Test;
 
 public class ResolutionTest {
 
+	/**
+	 * Test that the resolution prover works
+	 */
 	@Test
 	public void test() {
+
+		boolean verbose = true;
 
 		String[] inputs = { "(X & (-X))", "(((A->B)&(-B))&A)", "(((A->B)&(B->C))->(-(A->C)))",
 				"(((A->B)&(B->C))->(A->C))", "(((P -> Q) & P) -> Q)", };
@@ -17,9 +22,10 @@ public class ResolutionTest {
 		assertTrue(inputs.length == results.length);
 
 		for (int i = 0; i < inputs.length; i++) {
-			Formula f = new Formula(inputs[i], true, true, System.out);
+			Formula f = new Formula(inputs[i], true, verbose, System.out);
 			assertEquals(f.getProof().isSatisfiable(), results[i]);
-			System.out.println("\n------------------------------------------------------------\n");
+			if (verbose)
+				System.out.println("\n------------------------------------------------------------\n");
 		}
 
 	}
