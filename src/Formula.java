@@ -285,7 +285,7 @@ public class Formula extends HashSet<Clause> {
 	 * @param proof
 	 *            The new proof
 	 */
-	public void setProof(ResolutionProof proof) {
+	public void setProof(Proof proof) {
 		this.proof = proof;
 	}
 

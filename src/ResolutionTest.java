@@ -19,6 +19,8 @@ public class ResolutionTest {
 			assertEquals(f.isSatisfiable(), AllTests.sampleResults[i]);
 			if (AllTests.verbose)
 				System.out.println("\n------------------------------------------------------------\n");
+			else
+				System.out.println(f.getProof().toString());
 		}
 
 	}

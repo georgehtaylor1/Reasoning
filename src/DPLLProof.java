@@ -72,6 +72,8 @@ public class DPLLProof implements Proof {
 		
 		if (verbose)
 			output.print(this.toString());
+		
+		getFormula().setProof(this);
 	}
 
 	/**

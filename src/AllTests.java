@@ -13,7 +13,7 @@ public class AllTests {
 	public static Clause h3 = new Clause();
 	public static Clause h4 = new Clause();
 
-	public static boolean verbose = true;
+	public static boolean verbose = false;
 
 	public static String[] sampleInputs = { "(X & (-X))", "(((A->B)&(-B))&A)", "(((A->B)&(B->C))->(-(A->C)))",
 			"(((A->B)&(B->C))->(A->C))", "(((P -> Q) & P) -> Q)", };
