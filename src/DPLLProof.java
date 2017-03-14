@@ -8,6 +8,8 @@ public class DPLLProof implements Proof {
 
 	private Model model;
 	private Formula formula;
+	
+	private long executionTime;
 
 	/**
 	 * Create a new DPLL proof object for the specified formula
@@ -41,6 +43,10 @@ public class DPLLProof implements Proof {
 	 */
 	@Override
 	public void prove(boolean verbose, PrintStream output) {
+		// Attempt to garbage collect to limit execution time anomalies
+		System.gc();
+		
+		long startTime = System.nanoTime();
 		model = new Model();
 		for (Clause c : formula) {
 			for (Literal l : c) {
@@ -60,7 +66,12 @@ public class DPLLProof implements Proof {
 			getFormula().setSatisfiable(true);
 			setModel(newModel);
 		}
-		output.print(this.toString());
+		
+		long endTime = System.nanoTime();
+		setExecutionTime(endTime - startTime);
+		
+		if (verbose)
+			output.print(this.toString());
 	}
 
 	/**
@@ -266,12 +277,22 @@ public class DPLLProof implements Proof {
 				r = r + "# This formula is unsatisfiable.                #\n";
 
 			r = r + "#                                               #\n";
+			r = r + "# Execution completed in:                       #\n";
+			r = r + String.format("# %33d nanoseconds #\n", getExecutionTime());
 		} else {
 			r = r + "# This formula is not yet proven                #\n";
 		}
 		r = r + "#                                               #\n";
 		r = r + "#===============================================#\n";
 		return r;
+	}
+
+	public long getExecutionTime() {
+		return executionTime;
+	}
+
+	public void setExecutionTime(long executionTime) {
+		this.executionTime = executionTime;
 	}
 
 }

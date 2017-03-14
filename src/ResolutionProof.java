@@ -7,6 +7,8 @@ public class ResolutionProof extends ArrayList<ProofLine> implements Proof {
 	private Formula modFormula;
 	private boolean proven;
 
+	private long executionTime;
+
 	public ResolutionProof(Formula formula) {
 		setFormula(formula);
 		setModFormula((Formula) formula.clone());
@@ -38,6 +40,9 @@ public class ResolutionProof extends ArrayList<ProofLine> implements Proof {
 		if (verbose)
 			output.println("Attempting to resolve the formula: " + getFormula().toString());
 
+		System.gc();
+		long startTime = System.nanoTime();
+
 		// Add all of the initial clauses to the proof
 		for (Clause c : getModFormula()) {
 			this.add(new ProofLine(c));
@@ -65,6 +70,9 @@ public class ResolutionProof extends ArrayList<ProofLine> implements Proof {
 		// If proved == 1 then it is satisfiable otherwise it is unsatisfiable 
 		getFormula().setSatisfiable(proved == 1);
 		setProven(true);
+
+		long endTime = System.nanoTime();
+		setExecutionTime(endTime - startTime);
 
 		if (verbose) {
 			output.println(this.toString());
@@ -171,6 +179,9 @@ public class ResolutionProof extends ArrayList<ProofLine> implements Proof {
 			r = r + "#                                               #\n";
 			r = r + "# This formula is " + (getFormula().isSatisfiable() ? "satisfiable  " : "unsatisfiable")
 					+ "                 #\n";
+			r = r + "#                                               #\n";
+			r = r + "# Execution completed in:                       #\n";
+			r = r + String.format("# %33d nanoseconds #\n", getExecutionTime());
 		} else {
 			r = r + "# This formula is not yet proven                #\n";
 		}
@@ -244,6 +255,14 @@ public class ResolutionProof extends ArrayList<ProofLine> implements Proof {
 	 */
 	public void setModFormula(Formula modFormula) {
 		this.modFormula = modFormula;
+	}
+
+	public long getExecutionTime() {
+		return executionTime;
+	}
+
+	public void setExecutionTime(long executionTime) {
+		this.executionTime = executionTime;
 	}
 
 }
