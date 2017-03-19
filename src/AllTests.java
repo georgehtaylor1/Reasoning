@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ClauseTest.class, ResolutionTest.class, DPLLTest.class })
+@SuiteClasses({ ClauseTest.class, ResolutionTest.class, DPLLTest.class, ParserTest.class })
 public class AllTests {
 
 	public static Clause h1 = new Clause();
@@ -18,7 +18,11 @@ public class AllTests {
 	public static String[] sampleInputs = { "(X & (-X))", "(((A->B)&(-B))&A)", "(((A->B)&(B->C))->(-(A->C)))",
 			"(((A->B)&(B->C))->(A->C))", "(((P -> Q) & P) -> Q)", };
 
-	public static boolean[] sampleResults = { false, false, true, true, true };
+	public static Conclusion[] sampleValidities = { Conclusion.INVALID, Conclusion.INVALID, Conclusion.INVALID,
+			Conclusion.VALID, Conclusion.VALID };
+	
+	public static Conclusion[] sampleSatisfiabilities = { Conclusion.UNSATISFIABLE, Conclusion.UNSATISFIABLE, Conclusion.SATISFIABLE,
+			Conclusion.SATISFIABLE, Conclusion.SATISFIABLE };
 
 	@ClassRule
 	public static ExternalResource testSetups = new ExternalResource() {

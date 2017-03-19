@@ -8,7 +8,7 @@ public class Formula extends HashSet<Clause> {
 	private Tree parseTree;
 	private Tree cnfTree;
 	private Proof proof;
-	private boolean satisfiable;
+	private Conclusion conclusion;
 
 	public boolean equals(Formula f) {
 		return this.size() == f.size() && f.containsAll(this);
@@ -24,20 +24,39 @@ public class Formula extends HashSet<Clause> {
 	 * @param output
 	 *            The PrintStream that should handle the runtime output
 	 */
-	public Formula(String formula, boolean prove, boolean verbose, PrintStream output) {
+	public Formula(String formula, boolean verbose, PrintStream output) {
 		setOriginalFormula(formula);
-		setParseTree(Parser.parse(getOriginalFormula(), verbose, output));
-		normaliseTree();
-		proof = new ResolutionProof(this);
-		if (prove)
-			prove(verbose, output);
+		setConclusion(Conclusion.UNKNOWN);
 	}
 
+	/**
+	 * Create an empty formula
+	 */
 	public Formula() {
-		// TODO Auto-generated constructor stub
 	}
 
-	private void normaliseTree() {
+	/**
+	 * Parse the formula into an AST
+	 * 
+	 * @param verbose
+	 *            Should there be a verbose output
+	 * @param output
+	 *            Where should the output be directed
+	 */
+	public void parse(boolean verbose, PrintStream output) {
+		setParseTree(Parser.parse(getOriginalFormula(), verbose, output));
+		normaliseTree(verbose, output);
+	}
+
+	/**
+	 * reduce the tree to CNF and setify the tree
+	 * 
+	 * @param verbose
+	 *            Should the method print a verbose output
+	 * @param output
+	 *            Where should the verbose output be directed
+	 */
+	private void normaliseTree(boolean verbose, PrintStream output) {
 		setCnfTree(removeImplications(getParseTree()));
 		setCnfTree(pushNegations(getCnfTree()));
 		setCnfTree(cnf(getCnfTree()));
@@ -46,9 +65,9 @@ public class Formula extends HashSet<Clause> {
 
 	/**
 	 * <ul>
-	 * <li>(A & B) | (C & D) => p((A & B) + C) & p((A + B) & D)</li>
-	 * <li>L + (A & B) => (A + L) & (B + L)</li>
-	 * <li>(A & B) + L => (A + L) & (B + L)</li>
+	 * <li>(A & B) | (C & D) ::= p((A & B) + C) & p((A + B) & D)</li>
+	 * <li>L + (A & B) ::= (A + L) & (B + L)</li>
+	 * <li>(A & B) + L ::= (A + L) & (B + L)</li>
 	 * </ul>
 	 * 
 	 * @param tree
@@ -85,14 +104,14 @@ public class Formula extends HashSet<Clause> {
 	/**
 	 * Remove implications according to the following rules:
 	 * <ul>
-	 * <li>L => L</li>
-	 * <li>~L => ~L</li>
+	 * <li>L ::= L</li>
+	 * <li>~L ::= ~L</li>
 	 * 
-	 * <li>~T => ~p(T)
-	 * <li>T > T => p(T) + ~p(T)</li>
-	 * <li>T + T => p(T) + p(T)</li>
-	 * <li>T & T => p(T) & p(T)</li>
-	 * <li>A <> B => p(~A + B) & p(A + ~B)</li>
+	 * <li>~T ::= ~p(T)
+	 * <li>T > T ::= p(T) + ~p(T)</li>
+	 * <li>T + T ::= p(T) + p(T)</li>
+	 * <li>T & T ::= p(T) & p(T)</li>
+	 * <li>A <> B ::= p(~A + B) & p(A + ~B)</li>
 	 * </ul>
 	 * 
 	 * @param tree
@@ -130,14 +149,14 @@ public class Formula extends HashSet<Clause> {
 	/**
 	 * Negations are removed according to the following rules: (T = tree, L = leaf)
 	 * <ul>
-	 * <li>L => L</li>
-	 * <li>-L => -L</li>
+	 * <li>L ::= L</li>
+	 * <li>~L ::= ~L</li>
 	 * 
-	 * <li>T&T => p(T) & p(T)</li>
-	 * <li>T+T => p(T) + p(T)</li>
-	 * <li>~(T&T) => p(~T) + p(~T)</li>
-	 * <li>~(T+T) => p(~T) & p(~T)</li>
-	 * <li>~(~T) => p(T)</li>
+	 * <li>T&T ::= p(T) & p(T)</li>
+	 * <li>T+T ::= p(T) + p(T)</li>
+	 * <li>~(T&T) ::= p(~T) + p(~T)</li>
+	 * <li>~(T+T) ::= p(~T) & p(~T)</li>
+	 * <li>~(~T) ::= p(T)</li>
 	 * </ul>
 	 * 
 	 * @param tree
@@ -239,21 +258,26 @@ public class Formula extends HashSet<Clause> {
 	/**
 	 * Prove the formula
 	 * 
+	 * @param proofType
+	 *            The type of proof that should be completed
 	 * @return The proof of the formula
 	 */
-	public Proof prove() {
-		return prove(false, System.out);
+	public Proof prove(ProofType proofType) {
+		return prove(proofType, false, System.out);
 	}
 
 	/**
 	 * Prove the formula with or without runtime output
 	 * 
+	 * @param proofType
+	 *            The type of proof that should be completed
 	 * @param verbose
 	 *            A boolean indicating whether there should be a runtime output
+	 * @param out
 	 * @return The proof
 	 */
-	public Proof prove(boolean verbose) {
-		return prove(verbose, System.out);
+	public Proof prove(ProofType proofType, boolean verbose) {
+		return prove(proofType, verbose, System.out);
 	}
 
 	/**
@@ -265,9 +289,20 @@ public class Formula extends HashSet<Clause> {
 	 *            The PrintStream that should produce the output
 	 * @return
 	 */
-	public Proof prove(boolean verbose, PrintStream output) {
-		proof.prove(verbose, output);
-		return getProof();
+	public Proof prove(ProofType proofType, boolean verbose, PrintStream output) {
+		if (proofType == ProofType.RESOLUTION) {
+			Formula negation = this.getNegation(verbose, output);
+			negation.parse(verbose, output);
+			this.proof = new ResolutionProof(negation, this);
+			this.proof.prove(verbose, output);
+			return this.proof;
+		}
+		if (proofType == ProofType.DPLL) {
+			this.proof = new DPLLProof(this);
+			this.proof.prove(verbose, output);
+			return this.proof;
+		}
+		return null;
 	}
 
 	/**
@@ -362,22 +397,34 @@ public class Formula extends HashSet<Clause> {
 	}
 
 	/**
-	 * Return whether the formula is satisfiable or not
+	 * Get the negated version of the formula
 	 * 
-	 * @return A boolean indicating whether or not the formula is satisfiable
+	 * @param output
+	 * @param verbose
+	 * 
+	 * @return The negated formula
 	 */
-	public boolean isSatisfiable() {
-		return satisfiable;
+	public Formula getNegation(boolean verbose, PrintStream output) {
+		return new Formula("(-" + getOriginalFormula() + ")", verbose, output);
 	}
 
 	/**
-	 * Set whether or not the formula is satisfiable
+	 * Get the conclusion of the proof on the formula
 	 * 
-	 * @param satisfiable
-	 *            The new value for the satisfiability of the formula
+	 * @return The conclusion for the formulas proof
 	 */
-	public void setSatisfiable(boolean satisfiable) {
-		this.satisfiable = satisfiable;
+	public Conclusion getConclusion() {
+		return conclusion;
+	}
+
+	/**
+	 * Set the conclusion for the formula
+	 * 
+	 * @param conclusion
+	 *            The new conclusion for the formula
+	 */
+	public void setConclusion(Conclusion conclusion) {
+		this.conclusion = conclusion;
 	}
 
 }

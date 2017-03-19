@@ -4,14 +4,22 @@ import java.util.ArrayList;
 public class ResolutionProof extends ArrayList<ProofLine> implements Proof {
 
 	private Formula formula;
+	private Formula originalFormula;
 	private Formula modFormula;
 	private boolean proven;
 
 	private long executionTime;
 
-	public ResolutionProof(Formula formula) {
+	/**
+	 * Takes a negated formula and attempts to prove it through resolution
+	 * 
+	 * @param formula
+	 *            The negated formula
+	 */
+	public ResolutionProof(Formula formula, Formula originalFormula) {
 		setFormula(formula);
-		setModFormula((Formula) formula.clone());
+		setOriginalFormula(originalFormula);
+		setModFormula((Formula) getFormula().clone());
 		setProven(false);
 	}
 
@@ -54,21 +62,22 @@ public class ResolutionProof extends ArrayList<ProofLine> implements Proof {
 		while (proved == 0) {
 			if (resolutionStep(verbose, output)) {
 				if (verbose)
-					output.println("Box found, formula unsatisfiable");
+					output.println("Box found, negated formula unsatisfiable");
 				proved = 2;
 			}
 
 			if (this.size() == previousFormulaSize) {
 				if (verbose)
-					output.println("No more clauses resolved, formula satisfiable");
+					output.println("No more clauses resolved, negated formula satisfiable");
 				proved = 1;
 			}
 
 			previousFormulaSize = this.size();
 		}
 
-		// If proved == 1 then it is satisfiable otherwise it is unsatisfiable 
-		getFormula().setSatisfiable(proved == 1);
+		// If proved == 1 then it is satisfiable otherwise it is unsatisfiable
+		getFormula().setConclusion(proved == 1 ? Conclusion.SATISFIABLE : Conclusion.UNSATISFIABLE);
+		getOriginalFormula().setConclusion(proofConclusion(this.getFormula().getConclusion()));
 		setProven(true);
 
 		long endTime = System.nanoTime();
@@ -163,31 +172,49 @@ public class ResolutionProof extends ArrayList<ProofLine> implements Proof {
 	 */
 	@Override
 	public String toString() {
-		String r = "#===============================================#\n";
-		r = r + "#                                               #\n";
-		r = r + String.format("# Proof for: %-34s #\n", getFormula().getOriginalFormula());
-		r = r + "#                                               #\n";
+		String r = "#=================================================#\n";
+		r = r + "#                                                 #\n";
+		r = r + String.format("# Proving: %-36s   #\n", getOriginalFormula().getOriginalFormula());
+		r = r + "#                                                 #\n";
+		r = r + String.format("# Proof for: %-34s   #\n", getFormula().getOriginalFormula());
+		r = r + "#                                                 #\n";
 		if (isProven()) {
-			r = r + "# Line no. | Clauses    | Resolvant             #\n";
-			r = r + "# ---------+------------+---------------------- #\n";
+			r = r + "# Line no. | Clauses    | Resolvant               #\n";
+			r = r + "# ---------+------------+----------------------   #\n";
 
 			int i = 0;
 			for (ProofLine l : this) {
-				r = r + String.format("# %8d |  %3s, %3s  | %-21s #\n", i++, lineNumber(l.getLine1()),
+				r = r + String.format("# %8d |  %3s, %3s  | %-21s   #\n", i++, lineNumber(l.getLine1()),
 						lineNumber(l.getLine2()), l.getResolvant().toString());
 			}
-			r = r + "#                                               #\n";
-			r = r + "# This formula is " + (getFormula().isSatisfiable() ? "satisfiable  " : "unsatisfiable")
-					+ "                 #\n";
-			r = r + "#                                               #\n";
-			r = r + "# Execution completed in:                       #\n";
-			r = r + String.format("# %33d nanoseconds #\n", getExecutionTime());
+			r = r + "#                                                 #\n";
+			r = r + String.format("# This negated formula is %-23s #\n", getFormula().getConclusion().toString());
+			r = r + String.format("# Therefore the original formula is %-13s #\n",
+					proofConclusion(getFormula().getConclusion()).toString());
+			r = r + "#                                                 #\n";
+			r = r + "# Execution completed in:                         #\n";
+			r = r + String.format("# %35d nanoseconds #\n", getExecutionTime());
 		} else {
-			r = r + "# This formula is not yet proven                #\n";
+			r = r + "# This formula is not yet proven                  #\n";
 		}
-		r = r + "#                                               #\n";
-		r = r + "#===============================================#\n";
+		r = r + "#                                                 #\n";
+		r = r + "#=================================================#\n";
 		return r;
+	}
+
+	/**
+	 * Convert a refutation conclusion into the actual conclusion
+	 * 
+	 * @param c
+	 *            The refutation conclusion
+	 * @return The actual conclusion
+	 */
+	private Conclusion proofConclusion(Conclusion c) {
+		if (c == Conclusion.SATISFIABLE)
+			return Conclusion.INVALID;
+		if (c == Conclusion.UNSATISFIABLE)
+			return Conclusion.VALID;
+		return Conclusion.UNKNOWN;
 	}
 
 	/**
@@ -263,6 +290,14 @@ public class ResolutionProof extends ArrayList<ProofLine> implements Proof {
 
 	public void setExecutionTime(long executionTime) {
 		this.executionTime = executionTime;
+	}
+
+	public Formula getOriginalFormula() {
+		return originalFormula;
+	}
+
+	public void setOriginalFormula(Formula originalFormula) {
+		this.originalFormula = originalFormula;
 	}
 
 }

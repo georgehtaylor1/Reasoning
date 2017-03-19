@@ -61,9 +61,9 @@ public class DPLLProof implements Proof {
 		Model newModel = proofRecurse(model, formula, verbose, output);
 		setProven(true);
 		if (newModel == null) {
-			getFormula().setSatisfiable(false);
+			getFormula().setConclusion(Conclusion.UNSATISFIABLE);
 		} else {
-			getFormula().setSatisfiable(true);
+			getFormula().setConclusion(Conclusion.SATISFIABLE);
 			setModel(newModel);
 		}
 		
@@ -269,7 +269,9 @@ public class DPLLProof implements Proof {
 		if (isProven()) {
 			r = r + "#                                               #\n";
 
-			if (getFormula().isSatisfiable()) {
+			if (getFormula().getConclusion() == Conclusion.SATISFIABLE) {
+				r = r + "# This formula is satisfiable.                  #\n";
+				r = r + "#                                               #\n";
 				r = r + "# Generated model:                              #\n";
 				r = r + "#                                               #\n";
 				for (Entry<String, Interpretation> e : getModel().entrySet()) {
