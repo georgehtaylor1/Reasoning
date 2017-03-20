@@ -8,7 +8,7 @@ A resolution proof is completed by negating the given formula, this negation is 
 ### DPLL proof
 A DPLL proof will determine whether or not a given formula is satisfiable or not, giving a model if it is satisfiable.
 ## Running
-The program is test-driven, there are currently two test files [ClauseTest.java](https://github.com/georgehtaylor1/Reasoning/blob/master/src/ClauseTest.java) and [ResolutionTest.java](https://github.com/georgehtaylor1/Reasoning/blob/master/src/ResolutionTest.java). The first tests the equals and compareTo methods in the [Clause.java](https://github.com/georgehtaylor1/Reasoning/blob/master/src/Clause.java) class. The second tests that the proof for a set of formulas returns the correct satisfiability.
+The program is test-driven, there are currently test files for DPLL proofs, Resolution Proofs, the DIMACS parser and clauses.
 To run the tests, use the [test suite](https://github.com/georgehtaylor1/Reasoning/blob/master/src/AllTests.java).
 ## Notes
 - The Formula object currently represents the clauses as a `HashSet<Clause>`. I would like to change this to use a `SortedSet<Clause>` as this would make selecting the smallest clauses for resolution more efficient.
