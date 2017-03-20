@@ -1,3 +1,4 @@
+package proof;
 import java.io.PrintStream;
 
 public interface Proof {

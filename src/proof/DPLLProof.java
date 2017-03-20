@@ -1,6 +1,11 @@
+package proof;
 import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Map.Entry;
+
+import formula.Clause;
+import formula.Formula;
+import formula.Literal;
 
 public class DPLLProof implements Proof {
 

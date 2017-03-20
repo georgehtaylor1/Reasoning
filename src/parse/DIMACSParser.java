@@ -1,9 +1,12 @@
+package parse;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+
+import formula.Formula;
 
 public class DIMACSParser {
 

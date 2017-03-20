@@ -1,6 +1,10 @@
+package test;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import formula.Formula;
+import proof.ProofType;
 
 public class DPLLTest {
 

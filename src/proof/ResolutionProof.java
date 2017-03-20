@@ -1,5 +1,10 @@
+package proof;
 import java.io.PrintStream;
 import java.util.ArrayList;
+
+import formula.Clause;
+import formula.Formula;
+import formula.Literal;
 
 public class ResolutionProof extends ArrayList<ProofLine> implements Proof {
 

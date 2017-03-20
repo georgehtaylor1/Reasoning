@@ -1,8 +1,13 @@
+package test;
 import org.junit.ClassRule;
 import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+
+import formula.Clause;
+import formula.Literal;
+import proof.Conclusion;
 
 @RunWith(Suite.class)
 @SuiteClasses({ ClauseTest.class, ResolutionTest.class, DPLLTest.class, ParserTest.class })

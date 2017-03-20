@@ -1,3 +1,4 @@
+package proof;
 
 public enum Interpretation {
 	FREE("Free"), TRUE("True"), FALSE("False");

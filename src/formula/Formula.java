@@ -1,6 +1,16 @@
+package formula;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
+
+import parse.Branch;
+import parse.Parser;
+import parse.Tree;
+import proof.Conclusion;
+import proof.DPLLProof;
+import proof.Proof;
+import proof.ProofType;
+import proof.ResolutionProof;
 
 public class Formula extends HashSet<Clause> {
 

@@ -1,3 +1,4 @@
+package formula;
 import java.util.HashSet;
 
 public class Clause extends HashSet<Literal> implements Comparable<Clause> {

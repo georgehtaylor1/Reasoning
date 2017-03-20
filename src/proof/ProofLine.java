@@ -1,3 +1,5 @@
+package proof;
+import formula.Clause;
 
 public class ProofLine {
 

@@ -1,8 +1,12 @@
-import static org.junit.Assert.*;
+package test;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import parse.DIMACSParser;
+
 
 public class ParserTest {
 
