@@ -1,1 +1,13 @@
 Help:
+
+This help file was displayed using the '-h' flag
+
+To run the program use ./run [<flag> <args>*]*
+
+Flags:
+
+  -h                Display the help file.
+  -f <formula>      Specify the input formula for the program to process.
+  -d <DIMACS_file>  Specify the DIMACS formatted file that the program should process.
+  -v                Specify if the program should produce a verbose output.
+  -o <output_file>  Optionally specify the location for the programs output.

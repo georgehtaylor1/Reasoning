@@ -32,7 +32,7 @@ public class Reasoning {
 					j++;
 				}
 				params.put(args[i], vals);
-				i = j;
+				i = j - 1;
 			}
 		}
 
@@ -56,6 +56,10 @@ public class Reasoning {
 			}
 		}
 
+		if(params.containsKey("-h")){
+			help();
+		}
+		
 		Formula formula = null;
 		if (params.containsKey("-f")) {
 			ArrayList<String> vals = params.get("-f");
@@ -87,8 +91,11 @@ public class Reasoning {
 	 *            Where should the output of the program be directed
 	 */
 	private static void process(Formula formula, boolean verbose, PrintStream out) {
+		formula.parse(verbose, out);
 		formula.prove(ProofType.RESOLUTION, verbose, out);
-		formula.prove(ProofType.RESOLUTION, verbose, out);
+		System.out.println(formula.getProof());
+		formula.prove(ProofType.DPLL, verbose, out);
+		System.out.println(formula.getProof());
 	}
 
 	/**
@@ -105,7 +112,7 @@ public class Reasoning {
 		} catch (IOException e) {
 			System.err.println("Help file could not be read");
 		}
-
+		System.exit(0);
 	}
 
 	/**
