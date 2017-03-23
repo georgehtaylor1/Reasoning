@@ -7,6 +7,12 @@ Input can be given either as a string based formula, or as a DIMACS formatted fi
 A resolution proof is completed by negating the given formula, this negation is then fully resolved to determine it's satisfiability and the original formulas validity is set.
 ### DPLL proof
 A DPLL proof will determine whether or not a given formula is satisfiable or not, giving a model if it is satisfiable.
+## Installation
+unzip the reasoning_1522968.zip file into the desired directory. Now run
+```{r, engine='bash', count_lines}
+./build
+```
+in order to build the program for use (note: this may require admin privileges). See the section below for details of how to run the program.
 ## Running
 The program can be built from source using the build script:
 ```{r, engine='bash', count_lines}
