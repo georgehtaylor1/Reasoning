@@ -1,4 +1,5 @@
 package formula;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -209,7 +210,7 @@ public class Formula extends HashSet<Clause> {
 	 * Convert the cnfTree into a Set of clauses
 	 */
 	private void setify() {
-		this.addAll(setify(getCnfTree()));
+		setify(getCnfTree());
 	}
 
 	/**
@@ -217,22 +218,15 @@ public class Formula extends HashSet<Clause> {
 	 * 
 	 * @param tree
 	 *            The tree to be converted
-	 * @return The set of sets representing the CNF form of the tree
 	 */
-	private Formula setify(Tree tree) {
-		Formula tempSet = new Formula();
-
+	private void setify(Tree tree) {
 		if (tree.isDisjunctTree()) {
 			Clause clause = collectDisjunctTerms(tree);
-			tempSet.add(clause);
+			this.add(clause);
 		} else {
-
-			tempSet.addAll(setify(tree.getLeft()));
-			tempSet.addAll(setify(tree.getRight()));
-
+			setify(tree.getLeft());
+			setify(tree.getRight());
 		}
-
-		return tempSet;
 	}
 
 	/**
