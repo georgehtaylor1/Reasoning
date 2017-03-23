@@ -80,8 +80,10 @@ public class DIMACSParser {
 	 * @param out
 	 *            Where any verbose output should be directed
 	 * @return The formula generated from the DIMACS file
+	 * @throws IOException
 	 */
-	private static Formula processFormula(ArrayList<String> fileLines, boolean verbose, PrintStream out) {
+	private static Formula processFormula(ArrayList<String> fileLines, boolean verbose, PrintStream out)
+			throws IOException {
 		if (nbClause == 1) {
 			String[] splitLine = fileLines.get(currLine).split(" ");
 			int[] intSplitLine = new int[splitLine.length];
@@ -152,17 +154,20 @@ public class DIMACSParser {
 	 * @param input
 	 *            The list of literals in the clause
 	 * @return The generated clause
+	 * @throws IOException
 	 */
-	private static String clauseToString(int[] input) {
+	private static String clauseToString(int[] input) throws IOException {
 		int numLiterals = input.length;
+		if (input[numLiterals - 1] != 0)
+			DIMACSFormatException();
 		if (numLiterals == 1)
 			return numberToAtom(input[0]);
 		String r = "";
-		for (int i = 0; i < numLiterals - 1; i++)
-			r = r + "(";
-		r = r + numberToAtom(input[0]);
-		for (int i = 1; i < numLiterals; i++) {
-			r = r + "+" + numberToAtom(input[i]) + ")";
+		for (int i = 0; i < numLiterals - 2; i++)
+			r += "(";
+		r += numberToAtom(input[0]);
+		for (int i = 1; i < numLiterals - 1; i++) {
+			r += "+" + numberToAtom(input[i]) + ")";
 		}
 		return r;
 	}
@@ -182,8 +187,8 @@ public class DIMACSParser {
 			neg = true;
 			r = "(-";
 		}
-		for (Integer i : numberToDigits(input + 1, 26))
-			r = r + ((char) (i + 64));
+		for (Integer i : numberToDigits(input, 26))
+			r += ((char) (i + 64));
 
 		return neg ? r + ")" : r;
 	}

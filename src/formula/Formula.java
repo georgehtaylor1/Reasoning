@@ -244,11 +244,11 @@ public class Formula extends HashSet<Clause> {
 				Clause clause = new Clause();
 				clause.add(new Literal(tree.getLeft().getSymbol(), true));
 				return clause;
-			} else {
-				Clause clause = new Clause();
-				clause.add(new Literal(tree.getSymbol(), false));
-				return clause;
 			}
+
+			Clause clause = new Clause();
+			clause.add(new Literal(tree.getSymbol(), false));
+			return clause;
 
 		}
 
@@ -371,14 +371,8 @@ public class Formula extends HashSet<Clause> {
 	 */
 	@Override
 	public String toString() {
-		String r = "";
-
-		if (getOriginalFormula() == null)
-			r = r + "No formula specified\n";
-		else
-			r = r + "Original Formula: " + getOriginalFormula() + "\nClause Normal Form: " + super.toString();
-
-		return r;
+		return getOriginalFormula() == null ? "No formula specified\n"
+				: "Original Formula: " + getOriginalFormula() + "\nClause Normal Form: " + super.toString();
 	}
 
 	/**
