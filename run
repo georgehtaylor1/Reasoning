@@ -1,2 +1,2 @@
 #!/bin/bash
-java -Xmx100m -cp src/. reasoning.Reasoning "$@"
+java -Xmx100m -cp bin/. reasoning.Reasoning "$@"
