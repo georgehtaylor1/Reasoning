@@ -19,7 +19,7 @@ Once built the program can be run using the running script:
 Examples can be found below.
 The program is also test-driven, there are currently test files for DPLL proofs, Resolution Proofs, the DIMACS parser and clauses.
 To run the tests, use the [test suite](https://github.com/georgehtaylor1/Reasoning/blob/master/src/AllTests.java).
-##Examples
+## Examples
 ```{r, engine='bash', count_lines}
 ./run -f "(((A->B)&(B->C))->(A->C))"
 ```
