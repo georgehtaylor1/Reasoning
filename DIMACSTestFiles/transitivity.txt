@@ -1,0 +1,8 @@
+c A DIMACS file for negated transitivity
+c It should be both invalid and unsatisfiable
+c
+p cnf 3 4
+1 0
+-1 2 0
+-3 0
+-2 3 0
