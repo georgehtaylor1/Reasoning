@@ -17,10 +17,11 @@ import proof.ProofType;
 public class Reasoning {
 
 	static HashMap<String, ArrayList<String>> params;
-
+	static String userDir;
+	
 	public static void main(String[] args) {
 
-		String dir = System.getProperty("user.dir") + "/";
+		userDir = System.getProperty("user.dir") + "/";
 
 		// Create a map of specified program parameters
 		params = new HashMap<String, ArrayList<String>>();
@@ -51,7 +52,7 @@ public class Reasoning {
 			if (vals.size() != 1)
 				fail("Incorrect usage of '-o'.");
 			try {
-				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(dir + vals.get(0), false)));
+				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(userDir + vals.get(0), false)));
 			} catch (FileNotFoundException e) {
 				fail("The specified output file could not be found.");
 			}
@@ -71,7 +72,7 @@ public class Reasoning {
 			ArrayList<String> vals = params.get("-d");
 			if (vals.size() != 1)
 				fail("Invalid input for the '-d' flag.");
-			formula = DIMACSParser.parse(dir + vals.get(0), verbose, out);
+			formula = DIMACSParser.parse(userDir + vals.get(0), verbose, out);
 		} else {
 			fail("No formula specified. Hint: use the '-f' or '-d' flags.");
 		}
@@ -105,7 +106,7 @@ public class Reasoning {
 	 */
 	private static void help() {
 		try (BufferedReader br = new BufferedReader(
-				new FileReader("/home/george/workspace/Reasoning/resource/help.txt"))) {
+				new FileReader(userDir + "/resource/help.txt"))) {
 			String line = null;
 			while ((line = br.readLine()) != null)
 				System.out.println(line);
