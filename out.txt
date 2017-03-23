@@ -13836,7 +13836,7 @@ No more clauses resolved, negated formula satisfiable
 # Therefore the original formula is invalid       #
 #                                                 #
 # Execution completed in:                         #
-#                           105363734 nanoseconds #
+#                           130086331 nanoseconds #
 #                                                 #
 #=================================================#
 
@@ -13876,6 +13876,6 @@ Clause Normal Form: []
 #            F -> Free                          #
 #                                               #
 # Execution completed in:                       #
-#                          68809239 nanoseconds #
+#                         151445874 nanoseconds #
 #                                               #
 #===============================================#

@@ -1,4 +1,5 @@
 package parse;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -9,6 +10,11 @@ import java.util.ArrayList;
 import formula.Formula;
 
 public class DIMACSParser {
+
+	static int currLine = -1;
+	static int nbVar = 0;
+	static int nbClause = 0;
+	static int pLineLength = 4;
 
 	/**
 	 * Parse the given input file into a formula
@@ -40,59 +46,18 @@ public class DIMACSParser {
 			e.printStackTrace();
 		}
 
-		int currLine = -1;
-
-		int nbVar = 0;
-		int nbClause = 0;
-
 		try {
 
-			while (fileLines.get(++currLine).charAt(0) == 'c')
-				;
+			currLine = -1;
+			nbVar = 0;
+			nbClause = 0;
+			pLineLength = 4;
 
-			if (fileLines.get(currLine).charAt(0) == 'p') {
-				String[] splitLine = fileLines.get(currLine++).split(" ");
+			processComments(fileLines);
 
-				if (splitLine.length != 4)
-					DIMACSFormatException();
-				if (!splitLine[1].equals("cnf"))
-					DIMACSFormatException();
+			processPLine(fileLines);
 
-				nbVar = Integer.parseInt(splitLine[2]);
-				nbClause = Integer.parseInt(splitLine[3]);
-
-			} else {
-				DIMACSFormatException();
-			}
-
-			if (nbClause == 1) {
-				String[] splitLine = fileLines.get(currLine).split(" ");
-				int[] intSplitLine = new int[splitLine.length];
-				for (int i = 0; i < splitLine.length; i++)
-					intSplitLine[i] = Integer.parseInt(splitLine[i]);
-				String formula = clauseToString(intSplitLine);
-				return new Formula(formula, verbose, out);
-			}
-
-			String formula = "";
-			for (int i = 0; i < nbClause - 1; i++)
-				formula = formula + "(";
-			String[] splitLine = fileLines.get(currLine++).split(" ");
-			int[] intSplitLine = new int[splitLine.length];
-			for (int i = 0; i < splitLine.length; i++)
-				intSplitLine[i] = Integer.parseInt(splitLine[i]);
-			formula = formula + clauseToString(intSplitLine);
-
-			while (currLine < fileLines.size()) {
-				splitLine = fileLines.get(currLine).split(" ");
-				intSplitLine = new int[splitLine.length];
-				for (int i = 0; i < splitLine.length; i++)
-					intSplitLine[i] = Integer.parseInt(splitLine[i]);
-				formula = formula + "&" + clauseToString(intSplitLine) + ")";
-				currLine++;
-			}
-
-			return new Formula(formula, verbose, out);
+			return processFormula(fileLines, verbose, out);
 
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
@@ -103,6 +68,82 @@ public class DIMACSParser {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Parse the formula in the DIMACS file
+	 * 
+	 * @param fileLines
+	 *            The breakdown of lines in the file
+	 * @param verbose
+	 *            A boolean indicationg whether there should be a verbose output
+	 * @param out
+	 *            Where any verbose output should be directed
+	 * @return The formula generated from the DIMACS file
+	 */
+	private static Formula processFormula(ArrayList<String> fileLines, boolean verbose, PrintStream out) {
+		if (nbClause == 1) {
+			String[] splitLine = fileLines.get(currLine).split(" ");
+			int[] intSplitLine = new int[splitLine.length];
+			for (int i = 0; i < splitLine.length; i++)
+				intSplitLine[i] = Integer.parseInt(splitLine[i]);
+			String formula = clauseToString(intSplitLine);
+			return new Formula(formula, verbose, out);
+		}
+
+		String formula = "";
+		for (int i = 0; i < nbClause - 1; i++)
+			formula = formula + "(";
+		String[] splitLine = fileLines.get(currLine++).split(" ");
+		int[] intSplitLine = new int[splitLine.length];
+		for (int i = 0; i < splitLine.length; i++)
+			intSplitLine[i] = Integer.parseInt(splitLine[i]);
+		formula = formula + clauseToString(intSplitLine);
+
+		while (currLine < fileLines.size()) {
+			splitLine = fileLines.get(currLine).split(" ");
+			intSplitLine = new int[splitLine.length];
+			for (int i = 0; i < splitLine.length; i++)
+				intSplitLine[i] = Integer.parseInt(splitLine[i]);
+			formula = formula + "&" + clauseToString(intSplitLine) + ")";
+			currLine++;
+		}
+		return new Formula(formula, verbose, out);
+	}
+
+	/**
+	 * Process the line of the file that contains the properties of the formula
+	 * 
+	 * @param fileLines
+	 *            The individual lines in the file
+	 * @throws IOException
+	 */
+	private static void processPLine(ArrayList<String> fileLines) throws IOException {
+		if (fileLines.get(currLine).charAt(0) == 'p') {
+			String[] splitLine = fileLines.get(currLine++).split(" ");
+
+			if (splitLine.length != pLineLength)
+				DIMACSFormatException();
+			if (!splitLine[1].equals("cnf"))
+				DIMACSFormatException();
+
+			nbVar = Integer.parseInt(splitLine[2]);
+			nbClause = Integer.parseInt(splitLine[3]);
+
+		} else {
+			DIMACSFormatException();
+		}
+	}
+
+	/**
+	 * Parse the file lines to ignore any comments at the start of the file
+	 * 
+	 * @param fileLines
+	 *            The lines of the file to be checked
+	 */
+	private static void processComments(ArrayList<String> fileLines) {
+		while (fileLines.get(++currLine).charAt(0) == 'c')
+			;
 	}
 
 	/**

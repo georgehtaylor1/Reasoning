@@ -1,4 +1,5 @@
 package proof;
+
 import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Map.Entry;
@@ -13,7 +14,7 @@ public class DPLLProof implements Proof {
 
 	private Model model;
 	private Formula formula;
-	
+
 	private long executionTime;
 
 	/**
@@ -50,7 +51,7 @@ public class DPLLProof implements Proof {
 	public void prove(boolean verbose, PrintStream output) {
 		// Attempt to garbage collect to limit execution time anomalies
 		System.gc();
-		
+
 		long startTime = System.nanoTime();
 		model = new Model();
 		for (Clause c : formula) {
@@ -71,13 +72,13 @@ public class DPLLProof implements Proof {
 			getFormula().setConclusion(Conclusion.SATISFIABLE);
 			setModel(newModel);
 		}
-		
+
 		long endTime = System.nanoTime();
 		setExecutionTime(endTime - startTime);
-		
+
 		if (verbose)
 			output.print(this.toString());
-		
+
 		getFormula().setProof(this);
 	}
 
@@ -268,38 +269,44 @@ public class DPLLProof implements Proof {
 	@Override
 	public String toString() {
 		String r = "#===============================================#\n";
-		r = r + "#                                               #\n";
-		r = r + String.format("# Proof for: %-34s #\n", getFormula().getOriginalFormula());
-		r = r + "#                                               #\n";
+		r += "#                                               #\n";
+		r += String.format("# Proof for: %-34s #\n", getFormula().getOriginalFormula());
+		r += "#                                               #\n";
 		if (isProven()) {
-			r = r + "#                                               #\n";
+			r += "#                                               #\n";
 
 			if (getFormula().getConclusion() == Conclusion.SATISFIABLE) {
-				r = r + "# This formula is satisfiable.                  #\n";
-				r = r + "#                                               #\n";
-				r = r + "# Generated model:                              #\n";
-				r = r + "#                                               #\n";
+				r += "# This formula is satisfiable.                  #\n";
+				r += "#                                               #\n";
+				r += "# Generated model:                              #\n";
+				r += "#                                               #\n";
 				for (Entry<String, Interpretation> e : getModel().entrySet()) {
-					r = r + String.format("#   %10s -> %-29s #\n", e.getKey(), e.getValue().toString());
+					r += String.format("#   %10s -> %-29s #\n", e.getKey(), e.getValue().toString());
 				}
 			} else
-				r = r + "# This formula is unsatisfiable.                #\n";
+				r += "# This formula is unsatisfiable.                #\n";
 
-			r = r + "#                                               #\n";
-			r = r + "# Execution completed in:                       #\n";
-			r = r + String.format("# %33d nanoseconds #\n", getExecutionTime());
+			r += "#                                               #\n";
+			r += "# Execution completed in:                       #\n";
+			r += String.format("# %33d nanoseconds #\n", getExecutionTime());
 		} else {
-			r = r + "# This formula is not yet proven                #\n";
+			r += "# This formula is not yet proven                #\n";
 		}
-		r = r + "#                                               #\n";
-		r = r + "#===============================================#\n";
+		r += "#                                               #\n";
+		r += "#===============================================#\n";
 		return r;
 	}
 
+	/* (non-Javadoc)
+	 * @see proof.Proof#getExecutionTime()
+	 */
 	public long getExecutionTime() {
 		return executionTime;
 	}
 
+	/* (non-Javadoc)
+	 * @see proof.Proof#setExecutionTime(long)
+	 */
 	public void setExecutionTime(long executionTime) {
 		this.executionTime = executionTime;
 	}

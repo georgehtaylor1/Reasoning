@@ -1,4 +1,5 @@
 package proof;
+
 import java.io.PrintStream;
 
 public interface Proof {
@@ -49,5 +50,20 @@ public interface Proof {
 	 */
 	@Override
 	public abstract String toString();
+
+	/**
+	 * Get the time taken to execute the proof
+	 * 
+	 * @return The time taken to execute the proof
+	 */
+	public abstract long getExecutionTime();
+
+	/**
+	 * Set the execution time for the proof
+	 * 
+	 * @param executionTime
+	 *            The time taken to execute the proof
+	 */
+	public abstract void setExecutionTime(long executionTime);
 
 }
