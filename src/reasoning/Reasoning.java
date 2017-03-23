@@ -1,8 +1,9 @@
 package reasoning;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -19,7 +20,7 @@ public class Reasoning {
 
 	public static void main(String[] args) {
 
-		String dir = System.getProperty("user.dir");
+		String dir = System.getProperty("user.dir") + "/";
 
 		// Create a map of specified program parameters
 		params = new HashMap<String, ArrayList<String>>();
@@ -50,16 +51,16 @@ public class Reasoning {
 			if (vals.size() != 1)
 				fail("Incorrect usage of '-o'.");
 			try {
-				out = new PrintStream(new File(dir + vals.get(0)));
+				out = new PrintStream(new BufferedOutputStream(new FileOutputStream(dir + vals.get(0), false)));
 			} catch (FileNotFoundException e) {
 				fail("The specified output file could not be found.");
 			}
 		}
 
-		if(params.containsKey("-h")){
+		if (params.containsKey("-h")) {
 			help();
 		}
-		
+
 		Formula formula = null;
 		if (params.containsKey("-f")) {
 			ArrayList<String> vals = params.get("-f");
@@ -96,6 +97,7 @@ public class Reasoning {
 		System.out.println(formula.getProof());
 		formula.prove(ProofType.DPLL, verbose, out);
 		System.out.println(formula.getProof());
+		out.close();
 	}
 
 	/**

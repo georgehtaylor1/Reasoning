@@ -127,7 +127,7 @@ public class DPLLProof implements Proof {
 		}
 		for (Entry<String, Interpretation> e : m1.entrySet()) {
 			if (e.getValue() == Interpretation.FREE) {
-				Literal testLiteral = new Literal(e.getKey(), true);
+				Literal testLiteral = new Literal(e.getKey(), false);
 				if (allLiterals.contains(testLiteral) && !allLiterals.contains(testLiteral.getCompliment())) {
 					if (verbose)
 						output.println(String.format("Pure literal on: %s", testLiteral.toString()));
